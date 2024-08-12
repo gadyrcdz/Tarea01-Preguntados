@@ -1,8 +1,10 @@
+// src/App.js
 import React, { useState } from 'react';
 import './App.css';
 import WelcomeScreen from './Components/WelcomeScreen';
 import GameScreen from './Components/GameScreen';
 import Title from './Components/Title';
+import HistoryPage from './Components/HistoryPage'; // Asegúrate de tener este componente
 
 function App() {
   const [name, setName] = useState('');
@@ -11,8 +13,9 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [aciertos, setAciertos] = useState(0);
+  const [viewHistory, setViewHistory] = useState(false);
 
-  //metodo para desordenar una lista con las respuestas
+  // Método para desordenar las respuestas
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -21,7 +24,7 @@ function App() {
     return array;
   };
 
-  //metodo para obtener del backend las preguntas
+  // Método para obtener preguntas del backend
   const fetchQuestions = async () => {
     try {
       const response = await fetch('http://localhost:9000/questions');
@@ -29,6 +32,7 @@ function App() {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
+      // Desordenar las respuestas de cada pregunta
       const shuffledQuestions = data.map(question => {
         const answers = shuffleArray([question.respuestaB, question.respuestaM1, question.respuestaM2]);
         return { ...question, answers };
@@ -39,7 +43,7 @@ function App() {
     }
   };
 
-  //metodo para iniciar con el apartado de juego
+  // Método para iniciar el juego
   const handleStartGame = async () => {
     if (name.trim() === '') {
       alert('Por favor, ingrese su nombre.');
@@ -51,11 +55,12 @@ function App() {
     setAciertos(0);
   };
 
+  // Método para mostrar la página de historial
   const handleViewHistory = () => {
-    // Aquí puedes redirigir a la página de historial de resultados
+    setViewHistory(true);
   };
 
-  //metodo que controla el fin de la partida como tambien en de las respuestas
+  // Método para manejar la respuesta del jugador
   const handleAnswer = (option) => {
     const currentQuestion = questions[currentQuestionIndex];
     if (option === currentQuestion.respuestaB) {
@@ -64,24 +69,21 @@ function App() {
     } else {
       alert('Respuesta incorrecta.');
     }
-    if (currentQuestionIndex < 10-1) {
+    if (currentQuestionIndex < 10) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      if(aciertos>=6){
-        alert(`Juego terminado. Aciertos: ${aciertos} HAZ GANADO!`);
+      // Manejo del fin del juego
+      if (aciertos >= 6) {
+        alert(`Juego terminado. Aciertos: ${aciertos} ¡HAS GANADO!`);
+      } else {
+        alert(`Juego terminado. Aciertos: ${aciertos} ¡HAS PERDIDO!`);
       }
-      else{
-        alert(`Juego terminado. Aciertos: ${aciertos} HAZ PERDIDO!`);
-
-      }
-      
       handleGameEnd();
     }
   };
 
-  // metodo para restablecer al menu inicial luego de terminar la partida
+  // Método para guardar el historial del juego y restablecer el estado
   const handleGameEnd = async () => {
-    //metodo para guardar los datos en la BD de historial
     const requestInit = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -96,23 +98,29 @@ function App() {
     } catch (error) {
       console.error('Error saving history:', error);
     }
+    // Restablecer el estado al menú inicial
     setGameStarted(false);
     setShowForm(false);
     setCurrentQuestionIndex(0);
     setName('');
   };
 
+  // Método para volver al menú principal desde la página de historial
+  const handleBackToMenu = () => {
+    setViewHistory(false);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <Title />
-        {!showForm && !gameStarted && (
+        {!showForm && !gameStarted && !viewHistory && (
           <div className="button-group">
             <button onClick={() => setShowForm(true)}>Iniciar Partida</button>
             <button onClick={handleViewHistory}>Ver Historial</button>
           </div>
         )}
-        {showForm && !gameStarted && (
+        {showForm && !gameStarted && !viewHistory && (
           <WelcomeScreen 
             name={name}
             setName={setName}
@@ -125,6 +133,12 @@ function App() {
             question={questions[currentQuestionIndex]}
             handleAnswer={handleAnswer}
           />
+        )}
+        {viewHistory && (
+          <div>
+            <HistoryPage />
+            <button onClick={handleBackToMenu}>Volver al Menú Principal</button>
+          </div>
         )}
       </header>
     </div>

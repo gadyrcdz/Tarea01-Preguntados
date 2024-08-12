@@ -31,4 +31,19 @@ routes.post('/history', (req, res) => {
     });
   });
 
+// Ruta para la obtener el historial
+routes.get('/historial', (req, res) => {
+  req.getConnection((err, conn) => {
+    if (err) {
+      return res.send(err);
+    }
+    conn.query('SELECT * FROM historial', (err, rows) => {
+      if (err) {
+        return res.send(err);
+      }
+      res.json(rows);
+    });
+  });
+});
+
 module.exports = routes;

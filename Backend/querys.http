@@ -10,3 +10,6 @@ Content-Type: application/json
     "aciertos": 6
 
 }
+
+###
+GET http://localhost:9000/historial HTTP/1.1

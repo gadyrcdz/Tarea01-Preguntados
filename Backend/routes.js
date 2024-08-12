@@ -1,13 +1,13 @@
 const express = require('express');
 const routes = express.Router();
 
-// Ruta para /api
-routes.get('/api', (req, res) => {
+// Ruta para la obtener las preguntas
+routes.get('/questions', (req, res) => {
   req.getConnection((err, conn) => {
     if (err) {
       return res.send(err);
     }
-    conn.query('SELECT * FROM preguntas', (err, rows) => {
+    conn.query('SELECT * FROM pregunta', (err, rows) => {
       if (err) {
         return res.send(err);
       }
@@ -16,13 +16,13 @@ routes.get('/api', (req, res) => {
   });
 });
 
-
-routes.post('/api', (req, res) => {
+//ruta para hacer la insercion de los jugadores en el historial
+routes.post('/history', (req, res) => {
     req.getConnection((err, conn) => {
       if (err) {
         return res.send(err);
       }
-      conn.query('INSERT INTO preguntas set ?', [req.body], (err, rows) => {
+      conn.query('INSERT INTO historial set ?', [req.body], (err, rows) => {
         if (err) {
           return res.send(err);
         }

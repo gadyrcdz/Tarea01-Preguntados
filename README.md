@@ -4,7 +4,6 @@ Desarrollo WEB del juego de preguntados
 _Gadyr Calderón Díaz-2022327328_
 ## LENGUAJES DE PROGRAMACIÓN 🚀
 ## ll Semestre 2024 🚀
-## LENGUAJES DE PROGRAMACIÓN🚀
 ## Tarea 1 🚀
 ## 11 agosto 2024 🚀
 ## STATUS || MuyBuena 🚀
